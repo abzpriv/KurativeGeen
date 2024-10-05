@@ -22,6 +22,7 @@ import Image1HighQuality from '../assets/Image1HighQuality.jpeg';
 import ExpertImage1 from '../assets/ExpertImage1.jpg';
 import CommunityImage from '../assets/CoomunityImage.jpg';
 import Link from 'next/link';
+import { MdArrowBack, MdArrowForward } from 'react-icons/md';
 
 type Product = {
   id: number;
@@ -53,15 +54,15 @@ const LandingPage: React.FC = () => {
   }, [images.length]);
 
 
-  const [visibleItems, setVisibleItems] = useState(1);
-
-   useEffect(() => {
+  const [visibleItems, setVisibleItems] = useState(3);
+  
+  useEffect(() => {
     const updateVisibleItems = () => {
       const screenWidth = window.innerWidth;
       if (screenWidth < 640) {
         setVisibleItems(1); 
       } else if (screenWidth < 1024) {
-        setVisibleItems(1);
+        setVisibleItems(3);
       } else {
         setVisibleItems(3); 
       }
@@ -94,6 +95,24 @@ const LandingPage: React.FC = () => {
       console.log('No cart found in localStorage');
     }
   }, []);
+   const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX - touchEndX > 50) {
+      handleNext();
+    } else if (touchEndX - touchStartX > 50) {
+      handlePrev();
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -206,87 +225,64 @@ const LandingPage: React.FC = () => {
         `}</style>
       </section>
 
-      <section className="bg-gradient-to-r from-white to-gray-50 py-24">
-  <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24">
-    <h2 className="text-5xl font-extrabold text-green-800 mb-8 text-left leading-tight tracking-wide">
-      Shop by Need
-    </h2>
-    <div className="border-l-4 border-green-800 h-full pl-6 mb-8"></div>
-    <h3 className="text-3xl font-bold text-green-800 mb-8 text-left leading-tight tracking-wider">
-      Trending Products
-    </h3>
-
-    <div className="relative w-full overflow-hidden">
-      {/* Carousel content */}
-      <div
-        className="flex transition-transform duration-500 ease-in-out"
-        style={{
-          transform: `translateX(-${(currentProductIndex * 100) / visibleItems}%)`,
-        }}
+      {/* Product Section */}
+      <section className="bg-white py-8">
+  <div className="px-4 max-w-7xl mx-auto">
+    
+    <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-800 mb-3 ">Best Seller</h2>
+    <h2 className="text-2xl lg:text-3xl font-extrabold text-center text-green-800 mb-8">Trending Products</h2>
+    
+    <div className="flex items-center justify-between mb-4">
+      <button
+        onClick={handlePrev}
+        className="bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center"
       >
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className={`min-w-[${100 / visibleItems}%] mx-auto flex-shrink-0 rounded-xl bg-white p-8 sm:p-4 md:p-6`}
-            style={{ maxWidth: '90%' }} 
+        <MdArrowBack className="h-8 w-8" aria-hidden="true" /> 
+      </button>
+      
+      <div 
+        className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory justify-center flex-grow mx-4"
+        onTouchStart={handleTouchStart} 
+        onTouchMove={handleTouchMove} 
+        onTouchEnd={handleTouchEnd}
+      >
+        {products.slice(currentProductIndex, currentProductIndex + visibleItems).map((product) => (
+          <div 
+            key={product.id} 
+            className="min-w-[300px] snap-center flex flex-col items-center p-6 bg-white shadow-lg rounded-lg m-4 "
           >
-            {/* Product Image */}
-            <div className="relative w-full h-64 sm:h-40 md:h-52 bg-white rounded-lg shadow-xl overflow-hidden mb-6 hover:shadow-2xl transition-all duration-300 ease-in-out">
-              <Image
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
-
-            {/* Product Details */}
-            <div className="text-center">
-              <h4 className="text-2xl sm:text-lg md:text-xl font-semibold text-green-800 mb-4">
-                {product.name}
-              </h4>
-              <p className="text-gray-500 text-lg sm:text-sm md:text-base font-medium">
-                Tablets: {product.tablets}
-              </p>
-              <p className="text-gray-500 text-lg sm:text-sm md:text-base mb-4 font-medium">
-                Price: {product.price}
-              </p>
-              <button
-                className="mt-4 px-8 py-3 sm:px-4 sm:py-2 md:px-6 md:py-3 bg-green-800 text-white text-lg sm:text-sm md:text-base font-bold rounded-full hover:bg-green-600 hover:scale-105 transition-all duration-300 ease-in-out shadow-lg"
-                onClick={() => handleAddToCart(product)}
-              >
-                Buy Now
-              </button>
-            </div>
+            <Image 
+              src={product.image} 
+              alt={product.name} 
+              width={200} 
+              height={200} 
+              className="mb-4 rounded-lg shadow-md"
+            />
+            <h3 className="text-lg font-bold text-green-800 mb-1">{product.name}</h3>
+            <p className="text-xs font-semibold text-green-800 mb-1">Tablets:{product.tablets}</p>
+            <p className="text-green-600 font-semibold mb-2">{product.price}</p>
+            <button 
+              onClick={() => handleAddToCart(product)} 
+              className="mt-2 bg-green-800 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-200"
+            >
+              Buy Now
+            </button>
           </div>
         ))}
       </div>
 
-      {/* Left button */}
-      <button
-        onClick={handlePrev}
-        className={`absolute top-1/2 left-2 transform -translate-y-1/2 bg-green-800 text-white p-3 rounded-full ${
-          currentProductIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'
-        } transition-all`}
-        disabled={currentProductIndex === 0}
-      >
-        Prev
-      </button>
-
-      {/* Right button */}
       <button
         onClick={handleNext}
-        className={`absolute top-1/2 right-2 transform -translate-y-1/2 bg-green-800 text-white p-3 rounded-full ${
-          currentProductIndex + visibleItems >= products.length
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-green-600'
-        } transition-all`}
-        disabled={currentProductIndex + visibleItems >= products.length}
+        className="bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center"
       >
-        Next
+        <MdArrowForward className="h-8 w-8" aria-hidden="true" /> 
       </button>
     </div>
+    
   </div>
 </section>
+
+
 
 
 <section className="bg-white py-16">
