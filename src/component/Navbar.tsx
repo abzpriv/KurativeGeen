@@ -85,7 +85,6 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
     }
   }, [setCart]);
 
-  // Save cart to local storage whenever it changes
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
@@ -256,36 +255,38 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
         <div className="relative flex justify-end items-center space-x-4 p-4">
       {/* Search Icon */}
       <div className={`relative ${isSearchOpen ? 'mb-2' : ''}`}>
-        {isSearchOpen ? (
-          <FaTimes
-            className="text-green-700 text-xl hover:text-green-900 transition mt-2 duration-200 cursor-pointer"
-            onClick={() => setIsSearchOpen(false)}
-          />
-        ) : (
-          <FaSearch
-            className="text-green-700 text-xl hover:text-green-900 transition duration-200 cursor-pointer"
-            onClick={() => setIsSearchOpen(true)}
-          />
-        )}
-        
-        {/* Search Input Container */}
-        {isSearchOpen && (
-          <div className="absolute right-full top-0 z-10 bg-white rounded-2xl shadow-lg lg:mt-0 mt-10 transition-transform duration-300 transform translate-x-[-10px] md:translate-x-0 w-64">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full p-2 rounded-2xl border text-black border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 pr-10"
-              onBlur={() => setIsSearchOpen(false)}
-            />
-            <FaSearch
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-              onClick={() => {
-                console.log("Search action triggered!");
-              }}
-            />
-          </div>
-        )}
-      </div>
+  {isSearchOpen ? (
+    <FaTimes
+      className="text-green-700 text-xl hover:text-green-900 transition mt-2 duration-200 cursor-pointer"
+      onClick={() => setIsSearchOpen(false)}
+    />
+  ) : (
+    <FaSearch
+      className="text-green-700 text-xl hover:text-green-900 transition duration-200 cursor-pointer"
+      onClick={() => setIsSearchOpen(true)}
+    />
+  )}
+
+  {/* Search Input Container */}
+  {isSearchOpen && (
+    <div className="absolute left-1/2 transform -translate-x-[60%] lg:-translate-x-[105%] top-0 z-10 bg-white rounded-2xl shadow-lg lg:mt-0 mt-10 transition-transform duration-300 w-64">
+      <input
+        type="text"
+        placeholder="Search..."
+        className="w-full p-2 rounded-2xl border text-black border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 pr-10"
+        onBlur={() => setIsSearchOpen(false)}
+      />
+      <FaSearch
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+        onClick={() => {
+          console.log("Search action triggered!");
+        }}
+      />
+    </div>
+  )}
+</div>
+
+
           <Link href="/login" aria-label="Profile">
          <FaUser className="text-green-700 text-xl hover:text-green-900 transition duration-200" />
         </Link>
