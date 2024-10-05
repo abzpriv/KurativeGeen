@@ -163,7 +163,7 @@ const LandingPage: React.FC = () => {
         </div>
 
         <div className="relative z-10 text-left flex flex-col space-y-4 sm:space-y-6 md:space-y-8">
-          <h1 className="text-white text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-wide mb-6 sm:mb-8 lg:mb-10 text-center relative drop-shadow-[0_6px_15px_rgba(0,0,0,0.9)] animate-[fadeInUp_1.5s_ease-out_forwards] transition-transform duration-1000 ease-in-out">
+          <h1 className="text-white text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-wide mb-6 sm:mb-8 lg:mb-10 text-center relative drop-shadow-[0_6px_15px_rgba(0,0,0,0.9)] animate-[fadeInUp_1.5s_ease-out_forwards] transition-transform duration-1000 ease-in-out">
             Kurative Green
              
             <br />
