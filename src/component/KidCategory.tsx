@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import dailyPinkImage from '../assets/ImageDailyPink.png';
 import familyImage from '../assets/ImageFamily.png';
@@ -72,6 +72,9 @@ const KidCategory = () => {
     setCart((prevCart) => [...prevCart, { ...product, quantity: 1 }]);
   }
 };
+useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <section className="bg-white">

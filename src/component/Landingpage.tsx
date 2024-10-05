@@ -44,6 +44,9 @@ const LandingPage: React.FC = () => {
   { id: 4, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets:30 },
   { id: 5, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets:10 },
 ];
+useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
 
   useEffect(() => {
@@ -228,14 +231,14 @@ const LandingPage: React.FC = () => {
       {/* Product Section */}
       <section className="bg-white py-8">
   <div className="px-4 max-w-7xl mx-auto">
-    
     <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-700 mb-3 ">Best Seller</h2>
     <h2 className="text-2xl lg:text-3xl font-extrabold text-center text-green-700 mb-8">Trending Products</h2>
     
     <div className="flex items-center justify-between mb-4">
       <button
         onClick={handlePrev}
-        className="bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center"
+        className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center ${currentProductIndex === 0 ? 'filter blur-sm opacity-50 cursor-not-allowed' : ''}`}
+        disabled={currentProductIndex === 0} // Disable button if at the start
       >
         <MdArrowBack className="h-8 w-8" aria-hidden="true" /> 
       </button>
@@ -259,11 +262,11 @@ const LandingPage: React.FC = () => {
               className="mb-4 rounded-lg shadow-md"
             />
             <h3 className="text-lg font-bold text-green-800 mb-1">{product.name}</h3>
-            <p className="text-xs font-semibold text-green-800 mb-1">Tablets:{product.tablets}</p>
+            <p className="text-xs font-semibold text-green-800 mb-1">Tablets: {product.tablets}</p>
             <p className="text-green-600 font-semibold mb-2">{product.price}</p>
             <button 
               onClick={() => handleAddToCart(product)} 
-              className="mt-2 bg-green-800 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-200"
+              className="mt-2 bg-green-800 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600 transition duration-200"
             >
               Buy Now
             </button>
@@ -273,12 +276,14 @@ const LandingPage: React.FC = () => {
 
       <button
         onClick={handleNext}
-        className="bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center"
+        className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center ${currentProductIndex + visibleItems >= products.length ? 'filter blur-sm opacity-50 cursor-not-allowed' : ''}`}
+        disabled={currentProductIndex + visibleItems >= products.length} // Disable button if at the end
       >
-        <MdArrowForward className="h-8 w-8" aria-hidden="true" /> 
+        <MdArrowForward className="h-8 w-8" aria-hidden="true" />
       </button>
     </div>
-    
+
+
   </div>
 </section>
 

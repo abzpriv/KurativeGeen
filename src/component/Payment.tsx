@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import paymentImage from '../assets/paymentImage.jpg';
 import bankIcon from '../assets/bankIcon.png';
@@ -95,6 +95,9 @@ const Payment = () => {
       }
     },
   });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <section>

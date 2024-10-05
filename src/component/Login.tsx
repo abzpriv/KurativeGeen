@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Footer from './Footer';
 import Navbar from './Navbar';
@@ -16,7 +16,9 @@ type CartItem = {
 
 const Login = () => {
   const [cart, setCart] = useState<CartItem[]>([]); 
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <section>
       <Navbar cart={cart} setCart={setCart} />

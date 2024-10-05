@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { StaticImageData } from 'next/image';
 import Footer from './Footer';
@@ -66,6 +66,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ selectedProduct }) => {
   const handleButtonClick = (section: 'reviews' | 'nutrients' | 'faqs') => {
     setActiveSection(section); 
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <section>

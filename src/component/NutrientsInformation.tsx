@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const nutrientData = [
   { name: 'VITAMIN C', value: '90mg U.S.P' },
@@ -40,6 +40,9 @@ const NutrientInformation: React.FC = () => {
   const toggleTranslation = () => {
     setShowUrdu(!showUrdu);
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <section className="py-16 bg-gradient-to-b from-white to-gray-50 flex flex-col justify-center">
