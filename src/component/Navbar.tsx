@@ -251,25 +251,53 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
             ))}
           </ul>
 
-        {/* Icons for Desktop */}
         <div className="relative flex justify-end items-center space-x-4 p-4">
-      {/* Search Icon */}
       <div className={`relative ${isSearchOpen ? 'mb-2' : ''}`}>
-  {isSearchOpen ? (
-    <FaTimes
-      className="text-green-700 text-xl hover:text-green-900 transition mt-2 duration-200 cursor-pointer"
-      onClick={() => setIsSearchOpen(false)}
-    />
-  ) : (
+  {/* Search Icon for Desktop */}
+  {!isSearchOpen && (
     <FaSearch
-      className="text-green-700 text-xl hover:text-green-900 transition duration-200 cursor-pointer"
+      className="text-green-700 text-xl hover:text-green-900 transition duration-200 cursor-pointer lg:block"
       onClick={() => setIsSearchOpen(true)}
     />
   )}
 
-  {/* Search Input Container */}
+  {/* Close Icon for Mobile */}
   {isSearchOpen && (
-    <div className="absolute left-1/2 transform -translate-x-[60%] lg:-translate-x-[105%] top-0 z-10 bg-white rounded-2xl shadow-lg lg:mt-0 mt-10 transition-transform duration-300 w-64">
+    <FaTimes
+      className="text-green-700 text-xl hover:text-green-900 transition mt-2 duration-200 cursor-pointer lg:hidden"
+      onClick={() => setIsSearchOpen(false)}
+    />
+  )}
+
+  {/* Search Input Container for Mobile */}
+  {isSearchOpen && (
+  <div className="fixed inset-0 bg-white z-10 flex flex-col p-4 lg:hidden">
+    <div className="flex items-center mt-16"> 
+      <div className="relative w-full"> 
+        <input
+          type="text"
+          placeholder="Search..."
+          className="w-full p-2 rounded-2xl border text-black border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 pr-10" // Add pr-10 for padding-right
+        />
+        <FaSearch
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer" 
+          onClick={() => {
+            console.log("Search action triggered!");
+          }}
+        />
+      </div>
+    </div>
+    <FaTimes
+      className="absolute right-4 top-4 text-green-700 text-2xl hover:text-green-900 transition duration-200 cursor-pointer"
+      onClick={() => setIsSearchOpen(false)}
+    />
+  </div>
+)}
+
+
+  {/* Search Input Container for Desktop */}
+  {isSearchOpen && (
+    <div className="hidden lg:flex lg:absolute lg:left-1/2 lg:transform lg:-translate-x-[105%] lg:top-[-10%] lg:z-10 lg:bg-white lg:rounded-2xl lg:shadow-lg lg:transition-transform lg:duration-300 lg:w-64">
       <input
         type="text"
         placeholder="Search..."
@@ -284,7 +312,19 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
       />
     </div>
   )}
+
+  {/* Close Icon for Desktop */}
+  {isSearchOpen && (
+    <FaTimes
+      className="text-green-700 text-xl hover:text-green-900 transition duration-200 mt-2 cursor-pointer lg:block"
+      onClick={() => setIsSearchOpen(false)}
+    />
+  )}
 </div>
+
+
+
+
 
 
           <Link href="/login" aria-label="Profile">
