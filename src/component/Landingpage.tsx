@@ -229,8 +229,8 @@ const LandingPage: React.FC = () => {
       <section className="bg-white py-8">
   <div className="px-4 max-w-7xl mx-auto">
     
-    <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-800 mb-3 ">Best Seller</h2>
-    <h2 className="text-2xl lg:text-3xl font-extrabold text-center text-green-800 mb-8">Trending Products</h2>
+    <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-700 mb-3 ">Best Seller</h2>
+    <h2 className="text-2xl lg:text-3xl font-extrabold text-center text-green-700 mb-8">Trending Products</h2>
     
     <div className="flex items-center justify-between mb-4">
       <button
