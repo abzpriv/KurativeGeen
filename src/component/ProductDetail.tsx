@@ -139,50 +139,59 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ selectedProduct }) => {
     <span className="text-sm text-gray-500">
       Contains {selectedProduct.nutrientCount || 0} nutrients, including:
     </span>
-    <div className="flex flex-wrap justify-center mt-4">
-      {selectedProduct.specialistNutrients?.map((nutrient, index) => (
-        <div key={index} className="flex flex-col items-center w-1/6 px-2">
-          <Image 
-            src={nutrient.image} 
-            alt={nutrient.name} 
-            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-lg" 
-          />
-          <h4 className="text-[10px] lg:text-sm sm:text-sm font-semibold max-w-sm text-green-800 mt-6 mb-3">{nutrient.name}</h4> {/* Adjusted font size for mobile */}
-          <p className="text-[9px] lg:text-sm sm:text-sm text-gray-700 max-w-sm text-center  ">{nutrient.description}</p> {/* Adjusted font size for mobile */}
-        </div>
-      ))}
+    <div className="flex flex-wrap justify-center mt-4 gap-4 sm:gap-2"> {/* Added gap for spacing */}
+  {selectedProduct.specialistNutrients?.map((nutrient, index) => (
+    <div key={index} className="flex flex-col items-center w-1/3 sm:w-1/4 md:w-1/6 px-2">
+      {/* Image with responsive sizes */}
+      <Image 
+        src={nutrient.image} 
+        alt={nutrient.name} 
+        className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full shadow-lg" 
+      />
+      {/* Nutrient name with responsive font sizes */}
+      <h4 className="text-[8px] sm:text-[9px] md:text-sm font-semibold text-green-800 mt-4 mb-2 text-center">
+        {nutrient.name}
+      </h4>
+      {/* Nutrient description with responsive font sizes */}
+      <p className="text-[7px] sm:text-[8px] md:text-sm text-gray-700 text-center max-w-xs">
+        {nutrient.description}
+      </p>
     </div>
+  ))}
+</div>
+
   </div>
 </section>
 
         {/* Tabs for Reviews, Nutrients, FAQs */}
-        <section>
-          <div className="flex w-full justify-between">
-            <button 
-              className={`flex-1 px-4 py-2 border border-black rounded-l ${activeSection === 'reviews' ? 'bg-gray-300 text-green-800' : 'bg-gray-200 text-green-800 hover:bg-gray-300'}`}
-              onClick={() => handleButtonClick('reviews')}
-            >
-              Reviews
-            </button>
-            <button 
-              className={`flex-1 px-4 py-2 border border-black ${activeSection === 'nutrients' ? 'bg-gray-300 text-green-800' : 'bg-gray-200 text-green-800 hover:bg-gray-300'}`}
-              onClick={() => handleButtonClick('nutrients')}
-            >
-              Nutrients Information
-            </button>
-            <button 
-              className={`flex-1 px-4 py-2 border border-black rounded-r ${activeSection === 'faqs' ? 'bg-gray-300 text-green-800' : 'bg-gray-200 text-green-800 hover:bg-gray-300'}`}
-              onClick={() => handleButtonClick('faqs')}
-            >
-              FAQs
-            </button>
-          </div>
+       <section>
+  <div className="flex w-full justify-between">
+    <button 
+      className={`flex-1 px-2 py-1 sm:px-3 sm:py-2 border border-black rounded-l ${activeSection === 'reviews' ? 'bg-gray-300 text-green-800' : 'bg-gray-200 text-green-800 hover:bg-gray-300'} text-[10px] sm:text-[12px] md:text-base`}
+      onClick={() => handleButtonClick('reviews')}
+    >
+      Reviews
+    </button>
+    <button 
+      className={`flex-1 px-2 py-1 sm:px-3 sm:py-2 border border-black ${activeSection === 'nutrients' ? 'bg-gray-300 text-green-800' : 'bg-gray-200 text-green-800 hover:bg-gray-300'} text-[10px] sm:text-[12px] md:text-base`}
+      onClick={() => handleButtonClick('nutrients')}
+    >
+      Nutrients Information
+    </button>
+    <button 
+      className={`flex-1 px-2 py-1 sm:px-3 sm:py-2 border border-black rounded-r ${activeSection === 'faqs' ? 'bg-gray-300 text-green-800' : 'bg-gray-200 text-green-800 hover:bg-gray-300'} text-[10px] sm:text-[12px] md:text-base`}
+      onClick={() => handleButtonClick('faqs')}
+    >
+      FAQs
+    </button>
+  </div>
 
-          {/* Conditionally render CustomerReviews or NutrientInformation based on active section */}
-          {activeSection === 'reviews' && <CustomerReviews />}
-          {activeSection === 'nutrients' && <NutrientInformation />}
-          {activeSection === 'faqs' && <Faqs />}
-        </section>
+  {/* Conditionally render CustomerReviews or NutrientInformation based on active section */}
+  {activeSection === 'reviews' && <CustomerReviews />}
+  {activeSection === 'nutrients' && <NutrientInformation />}
+  {activeSection === 'faqs' && <Faqs />}
+</section>
+
       </section>
       <Footer />
     </section>

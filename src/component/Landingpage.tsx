@@ -59,9 +59,9 @@ const LandingPage: React.FC = () => {
     const updateVisibleItems = () => {
       const screenWidth = window.innerWidth;
       if (screenWidth < 640) {
-        setVisibleItems(1);
+        setVisibleItems(1); 
       } else if (screenWidth < 1024) {
-        setVisibleItems(2);
+        setVisibleItems(1);
       } else {
         setVisibleItems(3); 
       }
@@ -73,17 +73,17 @@ const LandingPage: React.FC = () => {
     return () => window.removeEventListener('resize', updateVisibleItems);
   }, []);
 
-const handlePrev = () => {
-  if (currentProductIndex > 0) {
-    setCurrentProductIndex(currentProductIndex - 1);
-  }
-};
+  const handlePrev = () => {
+    if (currentProductIndex > 0) {
+      setCurrentProductIndex(currentProductIndex - 1);
+    }
+  };
 
-const handleNext = () => {
-  if (currentProductIndex + visibleItems < products.length) {
-    setCurrentProductIndex(currentProductIndex + 1);
-  }
-};
+  const handleNext = () => {
+    if (currentProductIndex + visibleItems < products.length) {
+      setCurrentProductIndex(currentProductIndex + 1);
+    }
+  };
     useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
@@ -95,7 +95,6 @@ const handleNext = () => {
     }
   }, []);
 
-  // Save cart to local storage whenever it changes
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
     console.log('Saved cart to localStorage:', cart);
@@ -217,68 +216,74 @@ const handleNext = () => {
       Trending Products
     </h3>
 
-    <div className="relative flex items-center justify-center">
-      {/* Left Arrow */}
-      {currentProductIndex > 0 && (
-        <button
-          onClick={handlePrev}
-          className="bg-green-800 text-white rounded-full p-4 absolute left-6 hover:bg-green-600 hover:scale-105 transition-transform duration-300 ease-in-out shadow-2xl z-10"
-        >
-          &lt;
-        </button>
-      )}
-
-      {/* Product Display */}
-       <div className="overflow-hidden w-full relative">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{
-                transform: `translateX(-${(currentProductIndex * 100) / visibleItems}%)`,
-              }}
-            >
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="min-w-[33.33%] sm:min-w-[50%] md:min-w-[25%] mx-4 sm:mx-2 md:mx-3 flex-shrink-0 rounded-xl bg-white p-8 sm:p-4 md:p-6"
-            >
-              {/* Product Image */}
-              <div className="relative w-full h-64 sm:h-40 md:h-52 bg-white rounded-lg shadow-xl overflow-hidden mb-6 hover:shadow-2xl transition-all duration-300 ease-in-out">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-lg"
-                />
-              </div>
-              {/* Product Details */}
-              <div className="text-center">
-                <h4 className="text-2xl sm:text-lg md:text-xl font-semibold text-green-800 mb-4">
-                  {product.name}
-                </h4>
-                 <p className="text-gray-500 text-lg sm:text-sm md:text-base  font-medium">Tablets: {product.tablets}</p>
-                <p className="text-gray-500 text-lg sm:text-sm md:text-base mb-4 font-medium">Price: {product.price}</p>
-                <button 
-                  className="mt-4 px-8 py-3 sm:px-4 sm:py-2 md:px-6 md:py-3 bg-green-800 text-white text-lg sm:text-sm md:text-base font-bold rounded-full hover:bg-green-600 hover:scale-105 transition-all duration-300 ease-in-out shadow-lg"
-                  onClick={() => handleAddToCart(product)}
-                >
-                  Buy Now
-                </button>
-              </div>
+    <div className="relative w-full overflow-hidden">
+      {/* Carousel content */}
+      <div
+        className="flex transition-transform duration-500 ease-in-out"
+        style={{
+          transform: `translateX(-${(currentProductIndex * 100) / visibleItems}%)`,
+        }}
+      >
+        {products.map((product) => (
+          <div
+            key={product.id}
+            className={`min-w-[${100 / visibleItems}%] mx-auto flex-shrink-0 rounded-xl bg-white p-8 sm:p-4 md:p-6`}
+            style={{ maxWidth: '90%' }} 
+          >
+            {/* Product Image */}
+            <div className="relative w-full h-64 sm:h-40 md:h-52 bg-white rounded-lg shadow-xl overflow-hidden mb-6 hover:shadow-2xl transition-all duration-300 ease-in-out">
+              <Image
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover rounded-lg"
+              />
             </div>
-          ))}
-        </div>
+
+            {/* Product Details */}
+            <div className="text-center">
+              <h4 className="text-2xl sm:text-lg md:text-xl font-semibold text-green-800 mb-4">
+                {product.name}
+              </h4>
+              <p className="text-gray-500 text-lg sm:text-sm md:text-base font-medium">
+                Tablets: {product.tablets}
+              </p>
+              <p className="text-gray-500 text-lg sm:text-sm md:text-base mb-4 font-medium">
+                Price: {product.price}
+              </p>
+              <button
+                className="mt-4 px-8 py-3 sm:px-4 sm:py-2 md:px-6 md:py-3 bg-green-800 text-white text-lg sm:text-sm md:text-base font-bold rounded-full hover:bg-green-600 hover:scale-105 transition-all duration-300 ease-in-out shadow-lg"
+                onClick={() => handleAddToCart(product)}
+              >
+                Buy Now
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Right Arrow */}
-      {currentProductIndex + (visibleItems === 1 ? 1 : 2) < products.length && (
-        <button
-          onClick={handleNext}
-          className="bg-green-800 text-white rounded-full hover:bg-green-600 hover:scale-105 p-4 absolute right-6 transition-transform duration-300 ease-in-out shadow-2xl z-10"
-        >
-          &gt;
-        </button>
-      )}
+      {/* Left button */}
+      <button
+        onClick={handlePrev}
+        className={`absolute top-1/2 left-2 transform -translate-y-1/2 bg-green-800 text-white p-3 rounded-full ${
+          currentProductIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'
+        } transition-all`}
+        disabled={currentProductIndex === 0}
+      >
+        Prev
+      </button>
+
+      {/* Right button */}
+      <button
+        onClick={handleNext}
+        className={`absolute top-1/2 right-2 transform -translate-y-1/2 bg-green-800 text-white p-3 rounded-full ${
+          currentProductIndex + visibleItems >= products.length
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-green-600'
+        } transition-all`}
+        disabled={currentProductIndex + visibleItems >= products.length}
+      >
+        Next
+      </button>
     </div>
   </div>
 </section>
