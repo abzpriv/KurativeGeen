@@ -1,0 +1,27 @@
+/* Navbar.module.css */
+.dropdownHidden {
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.dropdownVisible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.animateMarquee {
+    display: flex;
+    width: calc(100% * 5);
+    animation: marquee 200s linear infinite;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
