@@ -242,13 +242,14 @@ useEffect(() => {
                   <p className="text-green-600 font-semibold mb-2">{product.price}</p>
                   <button 
                     onClick={(e) => {
-                      e.preventDefault();
+                     e.preventDefault();
                       handleAddToCart(product);
-                    }}
-                    className="bg-green-800 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
-                  >
-                    Add to Cart
+                   }}
+                  className="bg-green-800 text-white px-4 py-2 rounded-full hover:bg-green-600 transition duration-200"
+                   >
+                    Buy Now
                   </button>
+
                 </div>
               ))}
             </div>
