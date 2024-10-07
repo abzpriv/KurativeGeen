@@ -56,7 +56,6 @@ useEffect(() => {
     return () => clearInterval(interval);
   }, [images.length]);
 
-
   const [visibleItems, setVisibleItems] = useState(3);
   
   useEffect(() => {
@@ -77,7 +76,7 @@ useEffect(() => {
     return () => window.removeEventListener('resize', updateVisibleItems);
   }, []);
 
-  const handlePrev = () => {
+ const handlePrev = () => {
     if (currentProductIndex > 0) {
       setCurrentProductIndex(currentProductIndex - 1);
     }
@@ -98,25 +97,7 @@ useEffect(() => {
       console.log('No cart found in localStorage');
     }
   }, []);
-   const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEndX(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStartX - touchEndX > 50) {
-      handleNext();
-    } else if (touchEndX - touchStartX > 50) {
-      handlePrev();
-    }
-  };
-
+   
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
     console.log('Saved cart to localStorage:', cart);
@@ -230,67 +211,58 @@ useEffect(() => {
 
       {/* Product Section */}
       <section className="bg-white py-8">
-  <div className="px-4 max-w-7xl mx-auto">
-    <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-700 mb-3">Best Seller</h2>
-    <h2 className="text-2xl lg:text-3xl font-extrabold text-center text-green-700 mb-8">Trending Products</h2>
-    
-    <div className="flex items-center justify-between mb-4">
-      <button
-        onClick={handlePrev}
-        className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center ${currentProductIndex === 0 ? 'filter blur-sm opacity-50 cursor-not-allowed' : ''}`}
-        disabled={currentProductIndex === 0}
-      >
-        <MdArrowBack className="h-8 w-8" aria-hidden="true" /> 
-      </button>
-      
-      <div 
-        className="flex overflow-x-hidden scrollbar-hide snap-x snap-mandatory justify-center flex-grow mx-4"
-        onTouchStart={handleTouchStart} 
-        onTouchMove={handleTouchMove} 
-        onTouchEnd={handleTouchEnd}
-      >
-        {products.slice(currentProductIndex, currentProductIndex + visibleItems).map((product) => (
-          <div 
-            key={product.id} 
-            className="min-w-[300px] snap-center flex flex-col items-center p-6 bg-white shadow-lg rounded-lg m-4"
-          >
-            <Image 
-              src={product.image} 
-              alt={product.name} 
-              width={200} 
-              height={200} 
-              className="mb-4 rounded-lg shadow-md"
-            />
-            <h3 className="text-lg font-bold text-green-800 mb-1">{product.name}</h3>
-            <p className="text-xs font-semibold text-green-800 mb-1">Tablets: {product.tablets}</p>
-            <p className="text-green-600 font-semibold mb-2">{product.price}</p>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation(); 
-                handleAddToCart(product);
-              }} 
-              className="mt-2 bg-green-800 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600 transition duration-200"
+        <div className="px-4 max-w-7xl mx-auto">
+          <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-700 mb-3">Best Seller</h2>
+          <h2 className="text-2xl lg:text-3xl font-extrabold text-center text-green-700 mb-8">Trending Products</h2>
+
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={handlePrev}
+              className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 ${currentProductIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={currentProductIndex === 0}
             >
-              Buy Now
+              <MdArrowBack className="h-8 w-8" aria-hidden="true" />
+            </button>
+
+            <div className="flex overflow-x-hidden justify-center flex-grow mx-4">
+              {products.slice(currentProductIndex, currentProductIndex + visibleItems).map((product) => (
+                <div 
+                  key={product.id} 
+                  className="min-w-[300px] flex flex-col items-center p-6 bg-white shadow-lg rounded-lg m-4"
+                >
+                  <Image 
+                    src={product.image} 
+                    alt={product.name} 
+                    width={200} 
+                    height={200} 
+                    className="mb-4 rounded-lg shadow-md"
+                  />
+                  <h3 className="text-lg font-bold text-green-800 mb-1">{product.name}</h3>
+                  <p className="text-xs font-semibold text-green-800 mb-1">Tablets: {product.tablets}</p>
+                  <p className="text-green-600 font-semibold mb-2">{product.price}</p>
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToCart(product);
+                    }}
+                    className="bg-green-800 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleNext}
+              className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 ${currentProductIndex + visibleItems >= products.length ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={currentProductIndex + visibleItems >= products.length}
+            >
+              <MdArrowForward className="h-8 w-8" aria-hidden="true" />
             </button>
           </div>
-        ))}
-      </div>
-
-      <button
-        onClick={handleNext}
-        className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center ${currentProductIndex + visibleItems >= products.length ? 'filter blur-sm opacity-50 cursor-not-allowed' : ''}`}
-        disabled={currentProductIndex + visibleItems >= products.length}
-      >
-        <MdArrowForward className="h-8 w-8" aria-hidden="true" />
-      </button>
-    </div>
-  </div>
-</section>
-
-
-
-
+        </div>
+      </section>
 
 <section className="bg-white py-16">
   <div className="container mx-auto flex flex-col md:flex-row items-center px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
