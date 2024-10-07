@@ -231,20 +231,20 @@ useEffect(() => {
       {/* Product Section */}
       <section className="bg-white py-8">
   <div className="px-4 max-w-7xl mx-auto">
-    <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-700 mb-3 ">Best Seller</h2>
+    <h2 className="text-3xl lg:text-4xl font-extrabold text-center text-green-700 mb-3">Best Seller</h2>
     <h2 className="text-2xl lg:text-3xl font-extrabold text-center text-green-700 mb-8">Trending Products</h2>
     
     <div className="flex items-center justify-between mb-4">
       <button
         onClick={handlePrev}
         className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center ${currentProductIndex === 0 ? 'filter blur-sm opacity-50 cursor-not-allowed' : ''}`}
-        disabled={currentProductIndex === 0} // Disable button if at the start
+        disabled={currentProductIndex === 0}
       >
         <MdArrowBack className="h-8 w-8" aria-hidden="true" /> 
       </button>
       
       <div 
-        className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory justify-center flex-grow mx-4"
+        className="flex overflow-x-hidden scrollbar-hide snap-x snap-mandatory justify-center flex-grow mx-4"
         onTouchStart={handleTouchStart} 
         onTouchMove={handleTouchMove} 
         onTouchEnd={handleTouchEnd}
@@ -252,7 +252,7 @@ useEffect(() => {
         {products.slice(currentProductIndex, currentProductIndex + visibleItems).map((product) => (
           <div 
             key={product.id} 
-            className="min-w-[300px] snap-center flex flex-col items-center p-6 bg-white shadow-lg rounded-lg m-4 "
+            className="min-w-[300px] snap-center flex flex-col items-center p-6 bg-white shadow-lg rounded-lg m-4"
           >
             <Image 
               src={product.image} 
@@ -265,7 +265,10 @@ useEffect(() => {
             <p className="text-xs font-semibold text-green-800 mb-1">Tablets: {product.tablets}</p>
             <p className="text-green-600 font-semibold mb-2">{product.price}</p>
             <button 
-              onClick={() => handleAddToCart(product)} 
+              onClick={(e) => {
+                e.stopPropagation(); 
+                handleAddToCart(product);
+              }} 
               className="mt-2 bg-green-800 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600 transition duration-200"
             >
               Buy Now
@@ -277,15 +280,14 @@ useEffect(() => {
       <button
         onClick={handleNext}
         className={`bg-green-800 text-white rounded-full p-3 shadow-md hover:bg-green-600 transition duration-200 flex items-center justify-center ${currentProductIndex + visibleItems >= products.length ? 'filter blur-sm opacity-50 cursor-not-allowed' : ''}`}
-        disabled={currentProductIndex + visibleItems >= products.length} // Disable button if at the end
+        disabled={currentProductIndex + visibleItems >= products.length}
       >
         <MdArrowForward className="h-8 w-8" aria-hidden="true" />
       </button>
     </div>
-
-
   </div>
 </section>
+
 
 
 
