@@ -1,14 +1,15 @@
 'use client';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
-import { FaComment, FaPaperPlane } from 'react-icons/fa';
+// import { FaComment, FaPaperPlane } from 'react-icons/fa';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa'
+import { FaWhatsapp } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState<{ from: string; text: string }[]>([]);
-    const [isSending, setIsSending] = useState(false);
+    // const [isChatOpen, setIsChatOpen] = useState(false);
+    // const [message, setMessage] = useState('');
+    const [messages, ] = useState<{ from: string; text: string }[]>([]);
+    // const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -18,60 +19,60 @@ const Footer: React.FC = () => {
     }, [messages]);
 
   
-    const handleSendMessage = async () => {
-    if (!message.trim() || isSending) return;
+//     const handleSendMessage = async () => {
+//     if (!message.trim() || isSending) return;
 
-    const recipientNumber = '+923356155446'; 
-    setMessages((prevMessages) => [...prevMessages, { from: 'User', text: message }]);
-    setIsSending(true);
+//     const recipientNumber = '+923356155446'; 
+//     setMessages((prevMessages) => [...prevMessages, { from: 'User', text: message }]);
+//     setIsSending(true);
 
-    try {
-        const response = await sendMessageToWhatsApp(message, recipientNumber); // Pass the recipient number
-        setMessages((prevMessages) => [...prevMessages, { from: 'Support', text: response }]);
-    } catch (error) {
-        console.error('Failed to send message to WhatsApp:', error);
-        setMessages((prevMessages) => [...prevMessages, { from: 'Support', text: 'Failed to send message' }]);
-    } finally {
-        setIsSending(false);
-        setMessage(''); 
-    }
-};
+//     try {
+//         const response = await sendMessageToWhatsApp(message, recipientNumber); // Pass the recipient number
+//         setMessages((prevMessages) => [...prevMessages, { from: 'Support', text: response }]);
+//     } catch (error) {
+//         console.error('Failed to send message to WhatsApp:', error);
+//         setMessages((prevMessages) => [...prevMessages, { from: 'Support', text: 'Failed to send message' }]);
+//     } finally {
+//         setIsSending(false);
+//         setMessage(''); 
+//     }
+// };
 
-const sendMessageToWhatsApp = async (message: string, to: string): Promise<string> => {
-    try {
-        const response = await fetch('/api/send-whatsapp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message, to }), 
-        });
+// const sendMessageToWhatsApp = async (message: string, to: string): Promise<string> => {
+//     try {
+//         const response = await fetch('/api/send-whatsapp', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ message, to }), 
+//         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorData.error}`);
-        }
+//         if (!response.ok) {
+//             const errorData = await response.json();
+//             throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorData.error}`);
+//         }
 
-        const data = await response.json();
-        return data.success ? 'Message sent successfully!' : 'Failed to send message.';
-    } catch (error) {
-        console.error('Failed to send message to WhatsApp:', error);
-        throw new Error('Failed to send message to WhatsApp');
-    }
-};
+//         const data = await response.json();
+//         return data.success ? 'Message sent successfully!' : 'Failed to send message.';
+//     } catch (error) {
+//         console.error('Failed to send message to WhatsApp:', error);
+//         throw new Error('Failed to send message to WhatsApp');
+//     }
+// };
 
 
+   const whatsappNumber = '+923356155446';
+    // const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    //     if (event.key === 'Enter') {
+    //         event.preventDefault();
+    //         handleSendMessage();
+    //     }
+    // };
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            handleSendMessage();
-        }
-    };
-
-    const toggleChat = () => {
-        setIsChatOpen(!isChatOpen);
-    };
+    // const toggleChat = () => {
+    //     setIsChatOpen(!isChatOpen);
+    // };
 
     return (
         <footer className="bg-green-800 text-white py-12">
@@ -172,8 +173,22 @@ const sendMessageToWhatsApp = async (message: string, to: string): Promise<strin
                 </p>
             </div>
 
+
+             <div className="fixed bottom-5 right-5 z-50">
+            <a
+            href={`https://wa.me/${whatsappNumber}`}
+           target="_blank"
+           rel="noopener noreferrer"
+           className="bg-green-700 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition duration-300 transform hover:scale-105 flex items-center"
+           >
+         <FaWhatsapp size={24} className="mr-2" />
+         <span className="font-medium">Chat with Us</span>
+           </a>
+            </div>
+
+
             {/* Chat Feature */}
-            {!isChatOpen && (
+            {/* {!isChatOpen && (
                 <div className="fixed bottom-5 right-5 z-50">
                     <button
                         onClick={toggleChat}
@@ -182,10 +197,10 @@ const sendMessageToWhatsApp = async (message: string, to: string): Promise<strin
                         <FaComment className="mr-2" /> Chat Now
                     </button>
                 </div>
-            )}
+            )} */}
 
             {/* Chat Box */}
-            {isChatOpen && (
+            {/* {isChatOpen && (
                 <div className="fixed bottom-5 right-5 z-50 bg-white shadow-lg rounded-lg p-4 w-80">
                     <div className="flex justify-between items-center mb-2 border-b border-gray-300 pb-2">
                         <h3 className="font-bold text-green-700 text-lg">Chat with Us</h3>
@@ -225,7 +240,7 @@ const sendMessageToWhatsApp = async (message: string, to: string): Promise<strin
                         </button>
                     </div>
                 </div>
-            )}
+            )} */}
         </footer>
     );
 };

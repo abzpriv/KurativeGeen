@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import Link from 'next/link';
 import { FaSearch, FaUser, FaShoppingCart, FaBars, FaTimes, FaPhone, FaWhatsapp } from 'react-icons/fa';
 import styles from './Navbar.module.css';
@@ -10,18 +10,18 @@ import { StaticImageData } from 'next/image';
 import { FaTrash } from 'react-icons/fa';
 
 export type CartItem = {
-  id: number;
+   _id: string;
   name: string;
-  price: string;
-  quantity: number;
+  price: number;
   image: StaticImageData;
+  quantity: number;
+  tablets: number;
 };
 type NavbarProps = {
   cart: CartItem[];
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; 
 };
 
-// Use NavbarProps in the component definition
 const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -54,7 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
   };
   const getQueryString = () => { 
   return cart
-    .map(item => `id=${item.id}&name=${encodeURIComponent(item.name)}&price=${item.price}&quantity=${item.quantity}`)
+    .map(item => `id=${item._id}&name=${encodeURIComponent(item.name)}&price=${item.price}&quantity=${item.quantity}`)
     .join('&');
 };
 
@@ -71,39 +71,25 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
     setIsCartOpen(true);
   };
 
-  const increaseQuantity = (id: number) => {
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
-    }
-  }, [setCart]);
-
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
-
-  const decreaseQuantity = (id: number) => {
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === id ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 } : item
+  const increaseQuantity = (_id: string) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item._id === _id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  useEffect(() => {
-    if (cart.length > 0) {
-      setIsCartOpen(true);
-    } else {
-      setIsCartOpen(false);
-    }
-  }, [cart]);
+  
+  
+   const decreaseQuantity = (_id: string) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item._id === _id ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 } : item
+      )
+    );
+  };
+
+  
   
 
   return (
@@ -195,21 +181,21 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
                         <ul className="space-y-2">
                           {name === 'Women' && womenNeeds.map((need) => (
                             <li key={need}>
-                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 hover:underline">
+                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 ">
                                 {need}
                               </Link>
                             </li>
                           ))}
                           {name === 'Men' && menNeeds.map((need) => (
                             <li key={need}>
-                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 hover:underline">
+                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 ">
                                 {need}
                               </Link>
                             </li>
                           ))}
                           {name === 'Kids' && kidsNeeds.map((need) => (
                             <li key={need}>
-                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 hover:underline">
+                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 ">
                                 {need}
                               </Link>
                             </li>
@@ -223,21 +209,21 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
                         <ul className="space-y-2">
                           {name === 'Women' && womenNutrients.map((nutrient) => (
                             <li key={nutrient}>
-                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 hover:underline">
+                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 ">
                                 {nutrient}
                               </Link>
                             </li>
                           ))}
                           {name === 'Men' && menNutrients.map((nutrient) => (
                             <li key={nutrient}>
-                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 hover:underline">
+                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 ">
                                 {nutrient}
                               </Link>
                             </li>
                           ))}
                           {name === 'Kids' && kidsNutrients.map((nutrient) => (
                             <li key={nutrient}>
-                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 hover:underline">
+                              <Link href="#" className="text-green-700 hover:text-green-900 transition duration-200 ">
                                 {nutrient}
                               </Link>
                             </li>
@@ -332,22 +318,23 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
         </Link>
 
 
-          <Link href="#" aria-label="Add to Cart" onClick={handleAddToCart}>
-            <div className="relative">
-              <FaShoppingCart className="text-green-700 text-xl hover:text-green-900 transition duration-200" />
-              {getTotalItemsInCart() > 0 && (
-              <span className="absolute -top-1 -right-1 bg-green-900 text-white text-xs rounded-full px-1">
-             {getTotalItemsInCart()}
-             </span>
-              )}
-            </div>
-          </Link>
+          <Link href="#" aria-label="Add to Cart" onClick={(e) => { e.preventDefault(); handleAddToCart(); }}>
+  <div className="relative">
+    <FaShoppingCart className="text-green-700 text-xl hover:text-green-900 transition duration-200" />
+    {getTotalItemsInCart() > 0 && (
+      <span className="absolute -top-1 -right-1 bg-green-900 text-white text-xs rounded-full px-1">
+        {getTotalItemsInCart()}
+      </span>
+    )}
+  </div>
+</Link>
+
         </div>
       </div>
 
       {/* Cart Sidebar */}
      {isCartOpen && (
-  <div className="fixed inset-y-0 right-0 bg-white shadow-lg w-64 md:w-80 lg:w-96 p-6 z-50 transition-transform transform translate-x-0 rounded-lg border border-gray-200 overflow-y-auto">
+  <div className={`fixed inset-y-0 right-0 bg-white shadow-lg w-64 md:w-80 lg:w-96 p-6 z-50 transition-transform transform ease-out duration-500 translate-x-0 rounded-lg border border-gray-200 overflow-y-auto ${styles.animateCartOpen}`}>
     <div className="flex justify-between items-center">
       <h2 className="text-lg md:text-xl lg:text-2xl font-semibold text-green-600">Shopping Cart</h2>
       <button
@@ -364,9 +351,15 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
       ) : (
         <ul className="divide-y divide-gray-200">
           {cart.map(item => (
-            <li key={item.id} className="flex items-center justify-between py-4">
+            <li key={item._id} className="flex items-center justify-between py-4">
               <div className="flex items-center space-x-4">
-                <Image src={item.image} alt={item.name} className="w-16 h-16 rounded-md object-cover" />
+<Image 
+    src={item.image} 
+    alt={item.name} 
+    width={64}  
+    height={64}
+    className="rounded-md object-cover" 
+/>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-800 font-medium">{item.name}</span>
@@ -374,11 +367,11 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-gray-600">{item.price}</span>
                     <div className="flex items-center lg:ml-10 space-x-2">
-                      <button onClick={() => decreaseQuantity(item.id)} className="text-gray-600 hover:text-red-600">
+                      <button onClick={() => decreaseQuantity(item._id)} className="text-gray-600 hover:text-red-600">
                         -
                       </button>
                       <span className="mx-2 text-sm text-black">{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id)} className="text-gray-600 hover:text-green-600">
+                      <button onClick={() => increaseQuantity(item._id)} className="text-gray-600 hover:text-green-600">
                         +
                       </button>
                     </div>
@@ -386,17 +379,21 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
                 </div>
               </div>
               <div className="justify-end">
-                <button
-                  onClick={() => {
-                    // Logic to remove the item from the cart
-                    setCart(prevCart => prevCart.filter(cartItem => cartItem.id !== item.id));
-                  }}
-                  className="text-green-600 hover:text-red-600 transition duration-200"
-                  aria-label="Delete item"
-                >
-                  <FaTrash />
-                </button>
-              </div>
+  <button
+    onClick={() => {
+      setCart(prevCart => {
+        const updatedCart = prevCart.filter(cartItem => cartItem._id !== item._id);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        return updatedCart;
+      });
+    }}
+    className="text-green-600 hover:text-red-600 transition duration-200"
+    aria-label="Delete item"
+  >
+    <FaTrash />
+  </button>
+</div>
+
             </li>
           ))}
         </ul>
@@ -409,8 +406,8 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
     <div className="flex justify-between items-center">
       <span className="text-gray-800 font-medium">Total Price:</span>
       <span className="text-green-600 font-semibold text-lg">
-        {Math.round(cart.reduce((total, item) => total + parseFloat(item.price) * item.quantity, 0)).toLocaleString()} PKR
-        </span>
+  {Math.round(cart.reduce((total, item) => total + item.price * item.quantity, 0)).toLocaleString()} PKR
+</span>
 
         </div>
         <div className="flex justify-between items-center mt-1">
@@ -420,13 +417,13 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
           </span>
         </div>
 
-          <Link href={`/payment?${getQueryString()}`}>
-        <button
-          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-500 transition duration-200 shadow-lg transform hover:scale-105"
-        >
-          Checkout
-        </button>
-      </Link>
+         <Link href={`/payment?${getQueryString()}`}>
+  <button
+    className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-500 transition duration-200 shadow-lg transform hover:scale-105"
+  >
+    Checkout
+  </button>
+</Link>
 
       </div>
     )}
@@ -439,7 +436,7 @@ const Navbar: React.FC<NavbarProps> = ({ cart, setCart }) => {
   <div className="md:hidden bg-white shadow-lg p-4 absolute w-full top-16 left-0 z-50">
     <ul className="space-y-2">
       {menuItems.map((item) => (
-        <li key={item.link}> {/* Use a unique link as the key */}
+        <li key={item.link}>
           <Link
             href={item.link} 
             className="text-green-700 text-lg font-semibold block py-2 transition duration-200 hover:text-green-900"

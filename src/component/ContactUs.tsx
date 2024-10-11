@@ -7,17 +7,44 @@ import Navbar from './Navbar';
 import { StaticImageData } from 'next/image';
 
 type CartItem = {
-  id: number;
+  _id: string;
   name: string;
-  price: string;
-  quantity: number;
+  price: number;
   image: StaticImageData;
+  quantity: number;
+  tablets: number;
 };
 
 const ContactUs = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false); 
   const [successMessage, setSuccessMessage] = useState('')
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        console.log('Loaded cart from localStorage:', parsedCart);
+        setCart(parsedCart);
+      } catch (error) {
+        console.error('Error parsing cart from localStorage:', error);
+      }
+    } else {
+      console.log('No cart found in localStorage');
+    }
+  }, []);
+   
+
+
+    
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      console.log('Saved cart to localStorage:', cart);
+    }
+  }, [cart]); 
 
   const validationSchema = Yup.object({
     name: Yup.string().required('Full Name is required'),

@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import paymentImage from '../assets/paymentImage.jpg';
 import bankIcon from '../assets/bankIcon.png';
-import dailyPinkImage from '../assets/ImageDailyPink.png';
-import familyImage from '../assets/ImageFamily.png';
+import { useCart } from './CartContext';
+import { useRouter } from 'next/navigation';
+
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -21,37 +22,56 @@ const validationSchema = Yup.object({
 });
 
 
-const cartItems = [
-  {
-    id: 1,
-    name: 'Xtreme',
-    image: familyImage,
-    price: 1500,
-    quantity: 2,
-  },
-  {
-    id: 2,
-    name: 'Daily Pink',
-    image: dailyPinkImage,
-    price: 1500,
-    quantity: 1,
-  },
-];
 
-// Shipping charges
 const shippingCharges = 200;
 
 const Payment = () => {
+  const { cart: contextCart } = useCart();
+  const [cart, setCart] = useState(contextCart || []);
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank'>('cash');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+    const [orderID, setOrderID] = useState<string | null>(null);
 
-  // Calculate the total price and subtotal
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const total = subtotal + shippingCharges;
-  const orderID = "#12345";
+   const subtotal = cart.reduce((acc, item) => {
+  console.log('Current item price:', item.price); 
+  const price = item.price; 
+  return acc + price * item.quantity; 
+}, 0);
 
-   const formik = useFormik({
+
+
+  useEffect(() => {
+    if (cart.length === 0) {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        setCart(parsedCart);
+        console.log('Loaded cart from localStorage:', parsedCart);
+      }
+    }
+  }, [cart]);
+
+   const total = subtotal + shippingCharges;
+ const generateUniqueOrderID = () => {
+    const timestamp = Date.now(); 
+    const randomNum = Math.floor(Math.random() * 10000); 
+    return `#${timestamp}-${randomNum}`; 
+  };
+
+  useEffect(() => {
+    const newOrderID = generateUniqueOrderID();
+    setOrderID(newOrderID); 
+  }, []);
+   console.log('Cart data:', cart);
+   const router = useRouter();
+   useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      console.log('Saved cart to localStorage:', cart);
+    }
+  }, [cart]); 
+    const formik = useFormik({
     initialValues: {
       fullName: '',
       email: '',
@@ -65,8 +85,9 @@ const Payment = () => {
     onSubmit: async (values) => {
       setLoading(true);
       setMessage('');
+
       try {
-        const response = await fetch('/api/sendOrderConfirmation', {
+        const responseEmail = await fetch('/api/sendOrderConfirmation', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -77,15 +98,36 @@ const Payment = () => {
             subtotal,
             total,
             shippingCharges,
-            cartItems,
+            cartItems: cart,
           }),
         });
 
-        if (response.ok) {
-          setMessage('Order confirmation email sent successfully!');
-          formik.resetForm(); // Reset form fields
+        const responseOrderHistory = await fetch('/api/OrderPaymentData', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...values,
+            orderID,
+            subtotal,
+            total,
+            shippingCharges,
+            cartItems: cart,
+          }),
+        });
+
+        // Check if both requests were successful
+        if (responseEmail.ok && responseOrderHistory.ok) {
+          setMessage('Order placed successfully! Confirmation email sent.');
+          formik.resetForm();
+          localStorage.removeItem('cart');
+
+          setTimeout(() => {
+            router.push('/'); 
+          }, 2000); 
         } else {
-          setMessage('Error sending order confirmation email');
+          setMessage('Error placing order. Please try again.');
         }
       } catch (error) {
         console.error('Error:', error);
@@ -95,13 +137,14 @@ const Payment = () => {
       }
     },
   });
+
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <section>
-      <section></section>
     <div className="bg-gradient-to-r from-white via-gray-100 to-green-50 min-h-screen flex items-center justify-center">
       <div className="flex flex-col md:flex-row bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl overflow-hidden max-w-6xl mx-auto p-8 md:p-12 space-y-8 md:space-y-0 md:space-x-12 items-center justify-center border border-gray-200">
         
@@ -271,18 +314,23 @@ const Payment = () => {
       {/* Product Summary Section */}
       <div className="mt-8">
         <h3 className="text-2xl font-semibold text-green-700 mb-4">Order Summary</h3>
-        {cartItems.map((item) => (
-          <div key={item.id} className="flex items-center justify-between mb-4 p-4 bg-green-50 rounded-lg shadow-lg">
-            <Image src={item.image} alt={item.name} width={70} height={70} className="rounded-lg border-2 border-green-200" />
-            <div className="ml-4 flex-1">
-              <p className="text-lg font-semibold text-green-900">{item.name}</p>
-              <p className="text-sm text-green-700">Quantity: {item.quantity}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-semibold text-green-900">{item.price} PKR</p>
-            </div>
-          </div>
-        ))}
+       {cart.map((item) => (
+  <div key={item._id} className="flex items-center justify-between mb-4 p-4 bg-green-50 rounded-lg shadow-lg">
+    <Image src={item.image} alt={item.name} width={70} height={70} className="rounded-lg border-2 border-green-200" />
+    <div className="ml-4 flex-1">
+      <p className="text-lg font-semibold text-green-900">{item.name}</p>
+      <p className="text-sm text-green-700">Quantity: {item.quantity}</p>
+    </div>
+    <div className="text-right">
+      <p className="text-lg font-semibold text-green-900">
+  ₨ {Number(item.price) * item.quantity} PKR
+</p>
+
+    </div>
+  </div>
+))}
+
+
         <div className="mt-4">
            <p className="text-lg font-medium text-green-700 flex justify-between">
     Order ID: <span className="font-semibold">{orderID}</span>
@@ -373,18 +421,22 @@ const Payment = () => {
     {/* Product Summary Section */}
     <div className="mt-8">
       <h3 className="text-2xl font-semibold text-green-700 mb-4">Order Summary</h3>
-      {cartItems.map((item) => (
-        <div key={item.id} className="flex items-center justify-between mb-4 p-4 bg-green-50 rounded-lg shadow-lg">
-          <Image src={item.image} alt={item.name} width={70} height={70} className="rounded-lg border-2 border-green-200" />
-          <div className="ml-4 flex-1">
-            <p className="text-lg font-semibold text-green-900">{item.name}</p>
-            <p className="text-sm text-green-700">Quantity: {item.quantity}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-lg font-semibold text-green-900">{item.price} PKR</p>
-          </div>
-        </div>
-      ))}
+      {cart.map((item) => (
+  <div key={item._id} className="flex items-center justify-between mb-4 p-4 bg-green-50 rounded-lg shadow-lg">
+    <Image src={item.image} alt={item.name} width={70} height={70} className="rounded-lg border-2 border-green-200" />
+    <div className="ml-4 flex-1">
+      <p className="text-lg font-semibold text-green-900">{item.name}</p>
+      <p className="text-sm text-green-700">Quantity: {item.quantity}</p>
+    </div>
+    <div className="text-right">
+    <p className="text-lg font-semibold text-green-900">
+  ₨ {item.price * item.quantity} PKR
+</p>
+
+    </div>
+  </div>
+))}
+
       <div className="mt-4">
          <p className="text-lg font-medium text-green-700 flex justify-between">
     Order ID: <span className="font-semibold">{orderID}</span>

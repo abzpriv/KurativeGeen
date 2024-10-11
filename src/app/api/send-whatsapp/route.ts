@@ -45,33 +45,33 @@
 
 // pages/api/send-whatsapp.ts
 
-import { NextResponse } from 'next/server';
-import twilio from 'twilio';
+// import { NextResponse } from 'next/server';
+// import twilio from 'twilio';
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const client = twilio(accountSid, authToken);
-const fromWhatsAppNumber = 'whatsapp:+14155238886';
+// const accountSid = process.env.TWILIO_ACCOUNT_SID;
+// const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const client = twilio(accountSid, authToken);
+// const fromWhatsAppNumber = 'whatsapp:+14155238886';
 
-export async function POST(request: Request) {
-    try {
-        const { message, to } = await request.json(); 
+// export async function POST(request: Request) {
+//     try {
+//         const { message, to } = await request.json(); 
 
-        if (!message || !to) {
-            return NextResponse.json({ error: 'Message and recipient number are required' }, { status: 400 });
-        }
+//         if (!message || !to) {
+//             return NextResponse.json({ error: 'Message and recipient number are required' }, { status: 400 });
+//         }
 
-        await client.messages.create({
-            body: message,
-            from: fromWhatsAppNumber, 
-            to: `whatsapp:${to}` 
-        });
+//         await client.messages.create({
+//             body: message,
+//             from: fromWhatsAppNumber, 
+//             to: `whatsapp:${to}` 
+//         });
 
-        return NextResponse.json({ success: true, message: 'Message sent to WhatsApp' });
-    } catch (error) {
-        console.error('Error sending WhatsApp message:', error);
+//         return NextResponse.json({ success: true, message: 'Message sent to WhatsApp' });
+//     } catch (error) {
+//         console.error('Error sending WhatsApp message:', error);
         
-        const errorMessage = error instanceof Error ? error.message : 'Failed to send WhatsApp message';
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
-    }
-}
+//         const errorMessage = error instanceof Error ? error.message : 'Failed to send WhatsApp message';
+//         return NextResponse.json({ error: errorMessage }, { status: 500 });
+//     }
+// }

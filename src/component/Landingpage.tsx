@@ -6,11 +6,9 @@ import ImageLanding13 from '../assets/Image3Landing.jpg';
 import ImageLanding14 from '../assets/Image4Landing.jpg';
 import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import familyImage from '../assets/ImageFamily.png';
 import CustomerReviews from './CustomerReviews';
 import Footer from './Footer';
 import { StaticImageData } from 'next/image';
-import dailyPinkImage from '../assets/ImageDailyPink.png';
 import familyFun from '../assets/ImageFun.jpg';
 import FeatureImageQuality from '../assets/FeatureQualityImage.jpg';
 import CustomerSatisfaction  from '../assets/CustomerSatisfication.jpg';
@@ -20,34 +18,64 @@ import SustainedSource from '../assets/SustainedSource.png';
 import ExpertImage from '../assets/ExpertImage.png';
 import Image1HighQuality from '../assets/Image1HighQuality.jpeg';
 import ExpertImage1 from '../assets/ExpertImage1.jpg';
+import axios from 'axios';
 import CommunityImage from '../assets/CoomunityImage.jpg';
 import Link from 'next/link';
 import { MdArrowBack, MdArrowForward } from 'react-icons/md';
 
 type Product = {
-  id: number;
+  _id: string;
   name: string;
-  price: string;
+  price: number;
   image: StaticImageData;
-  quantity: number; 
+  quantity: number;
+  tablets: number;
 };
 
 const LandingPage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const images = [ImageLanding12, ImageLanding14, ImageLanding13];
-  const [cart, setCart] = useState<Product[]>([]);
+ const [cart, setCart] = useState<Product[]>([]); 
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
-  const products = [
-  { id: 1, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets:10 },
-  { id: 2, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets:30 },
-  { id: 3, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets:10 },
-  { id: 4, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets:30 },
-  { id: 5, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets:10 },
-];
-useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [, setIsCartOpen] = useState(false);
 
+//   const products = [
+//   { id: 1, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets:10 },
+//   { id: 2, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets:30 },
+//   { id: 3, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets:10 },
+//   { id: 4, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets:30 },
+//   { id: 5, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets:10 },
+// ];
+
+useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        console.log('Loaded cart from localStorage:', parsedCart);
+        setCart(parsedCart);
+      } catch (error) {
+        console.error('Error parsing cart from localStorage:', error);
+      }
+    } else {
+      console.log('No cart found in localStorage');
+    }
+  }, []);
+   
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        console.log('Loaded cart from localStorage:', parsedCart);
+        setCart(parsedCart);
+      } catch (error) {
+        console.error('Error parsing cart from localStorage:', error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -87,28 +115,20 @@ useEffect(() => {
       setCurrentProductIndex(currentProductIndex + 1);
     }
   };
-    useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      const parsedCart: Product[] = JSON.parse(savedCart);
-      setCart(parsedCart);
-      console.log('Loaded cart from localStorage:', parsedCart);
-    } else {
-      console.log('No cart found in localStorage');
+    
+ useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      console.log('Saved cart to localStorage:', cart);
     }
-  }, []);
-   
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    console.log('Saved cart to localStorage:', cart);
-  }, [cart]);
+  }, [cart]); 
 
   const handleAddToCart = (product: Product) => {
-    const existingProductIndex = cart.findIndex(item => item.id === product.id);
-    
+    const existingProductIndex = cart.findIndex(item => item._id === product._id);
     let updatedCart: Product[];
+
     if (existingProductIndex !== -1) {
-      updatedCart = cart.map((item, index) => 
+      updatedCart = cart.map((item, index) =>
         index === existingProductIndex ? { ...item, quantity: item.quantity + 1 } : item
       );
       console.log(`Updated quantity for product ${product.name}:`, updatedCart[existingProductIndex].quantity);
@@ -118,96 +138,115 @@ useEffect(() => {
     }
 
     setCart(updatedCart);
+    setIsCartOpen(true); 
     console.log('Current cart state after update:', updatedCart);
   };
+
+
+  useEffect(() => {
+    // Fetch products from the API
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('/api/products');
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+  
   return (
     <section>
       <section>
       <Navbar cart={cart} setCart={setCart} />
       </section>
       <section className="relative w-full h-screen flex flex-col justify-center lg:mt-36 mt-16 overflow-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
-        <div className="absolute inset-0 z-0 w-full h-full overflow-hidden">
-          <div className="sliderWrapper w-full h-full relative">
-            {images.map((image, index) => (
-              <div
-                key={index}
-                className={`slide absolute w-full h-full transition-opacity duration-2000 ease-in-out ${
-                  index === currentSlide ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <Image
-                  src={image}
-                  alt={`Slide Image ${index + 1}`}
-                  layout="fill"
-                  objectFit="cover"
-                />
-              </div>
-            ))}
-          </div>
+  <div className="absolute inset-0 z-0 w-full h-full overflow-hidden">
+    <div className="sliderWrapper w-full h-full relative">
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className={`slide absolute w-full h-full transition-opacity duration-2000 ease-in-out ${
+            index === currentSlide ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <Image
+            src={image}
+            alt={`Slide Image ${index + 1}`}
+            layout="fill"  
+            objectFit="cover"
+            className="rounded-lg" 
+          />
         </div>
+      ))}
+    </div>
+  </div>
 
-        <div className="relative z-10 text-left flex flex-col space-y-4 sm:space-y-6 md:space-y-8">
-          <h1 className="text-white text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-wide mb-6 sm:mb-8 lg:mb-10 text-center relative drop-shadow-[0_6px_15px_rgba(0,0,0,0.9)] animate-[fadeInUp_1.5s_ease-out_forwards] transition-transform duration-1000 ease-in-out">
-            Kurative Green
-             
-            <br />
-            <span className="relative text-2xl sm:text-3xl md:text-4xl inline-block text-transparent ml-4 bg-clip-text bg-gradient-to-r from-green-300 to-green-500 px-4 py-2 
-            font-extrabold rounded-full transform hover:scale-110 transition-transform duration-700 ease-out shadow-[0_10px_10px_rgba(0,0,0,0.5)] after:absolute after:inset-0 after:rounded-full after:blur-lg after:bg-gradient-to-r after:from-green-300 after:to-green-500 after:opacity-30 hover:after:opacity-30 before:absolute before:-inset-1 before:bg-black before:rounded-full before:blur-md before:opacity-20 hover:before:opacity-10">
-              Best Seller
-            </span>
-          </h1>
-        </div>
+  <div className="relative z-10 text-left flex flex-col space-y-4 sm:space-y-6 md:space-y-8">
+    <h1 className="text-white text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-wide mb-6 sm:mb-8 lg:mb-10 text-center relative drop-shadow-[0_6px_15px_rgba(0,0,0,0.9)] animate-[fadeInUp_1.5s_ease-out_forwards] transition-transform duration-1000 ease-in-out">
+      Kurative Green
 
-        {/* Conditional Buttons */}
-       <div className="relative z-10 text-center mt-8">
-  {currentSlide === 0 && (
-    <Link href="/women">
-      <button className="px-6 py-2 sm:py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-400 transition-colors duration-2000">
-        Shop for Women
-      </button>
-    </Link>
-  )}
-  {currentSlide === 1 && (
-    <Link href="/men">
-      <button className="px-6 py-2 sm:py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-400 transition-colors duration-2000">
-        Shop for Men
-      </button>
-    </Link>
-  )}
-  {currentSlide === 2 && (
-    <Link href="/kids">
-      <button className="px-6 py-2 sm:py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-400 transition-colors duration-2000">
-        Shop for Kids
-      </button>
-    </Link>
-  )}
-</div>
+      <br />
+      <span className="relative text-2xl sm:text-3xl md:text-4xl inline-block text-transparent ml-4 bg-clip-text bg-gradient-to-r from-green-300 to-green-500 px-4 py-2 
+      font-extrabold rounded-full transform hover:scale-110 transition-transform duration-700 ease-out shadow-[0_10px_10px_rgba(0,0,0,0.5)] after:absolute after:inset-0 after:rounded-full after:blur-lg after:bg-gradient-to-r after:from-green-300 after:to-green-500 after:opacity-30 hover:after:opacity-30 before:absolute before:-inset-1 before:bg-black before:rounded-full before:blur-md before:opacity-20 hover:before:opacity-10">
+        Best Seller
+      </span>
+    </h1>
+  </div>
 
-        <style jsx>{`
-          .sliderWrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-          }
+  {/* Conditional Buttons */}
+  <div className="relative z-10 text-center mt-8">
+    {currentSlide === 0 && (
+      <Link href="/women">
+        <button className="px-6 py-2 sm:py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-400 transition-colors duration-2000">
+          Shop for Women
+        </button>
+      </Link>
+    )}
+    {currentSlide === 1 && (
+      <Link href="/men">
+        <button className="px-6 py-2 sm:py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-400 transition-colors duration-2000">
+          Shop for Men
+        </button>
+      </Link>
+    )}
+    {currentSlide === 2 && (
+      <Link href="/kids">
+        <button className="px-6 py-2 sm:py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-400 transition-colors duration-2000">
+          Shop for Kids
+        </button>
+      </Link>
+    )}
+  </div>
 
-          .slide {
-            animation: fade 18s infinite ease-in-out;
-            transition: opacity 3s ease-in-out;
-          }
+  <style jsx>{`
+    .sliderWrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
 
-          @keyframes fade {
-            0% { opacity: 0; }
-            8% { opacity: 1; }
-            25% { opacity: 1; }
-            33% { opacity: 0; }
-            100% { opacity: 0; }
-          }
+    .slide {
+      animation: fade 18s infinite ease-in-out;
+      transition: opacity 3s ease-in-out;
+    }
 
-          .slide:nth-child(1) { animation-delay: 0s; }
-          .slide:nth-child(2) { animation-delay: 6s; }
-          .slide:nth-child(3) { animation-delay: 12s; }
-        `}</style>
-      </section>
+    @keyframes fade {
+      0% { opacity: 0; }
+      8% { opacity: 1; }
+      25% { opacity: 1; }
+      33% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    .slide:nth-child(1) { animation-delay: 0s; }
+    .slide:nth-child(2) { animation-delay: 6s; }
+    .slide:nth-child(3) { animation-delay: 12s; }
+  `}</style>
+</section>
+
 
       {/* Product Section */}
       <section className="bg-white py-8">
@@ -227,7 +266,7 @@ useEffect(() => {
             <div className="flex overflow-x-hidden justify-center flex-grow mx-4">
               {products.slice(currentProductIndex, currentProductIndex + visibleItems).map((product) => (
                 <div 
-                  key={product.id} 
+                  key={product._id} 
                   className="min-w-[300px] flex flex-col items-center p-6 bg-white shadow-lg rounded-lg m-4"
                 >
                   <Image 
@@ -235,21 +274,20 @@ useEffect(() => {
                     alt={product.name} 
                     width={200} 
                     height={200} 
-                    className="mb-4 rounded-lg shadow-md"
+                    className="mb-4 rounded-lg"
                   />
                   <h3 className="text-lg font-bold text-green-800 mb-1">{product.name}</h3>
                   <p className="text-xs font-semibold text-green-800 mb-1">Tablets: {product.tablets}</p>
                   <p className="text-green-600 font-semibold mb-2">{product.price}</p>
                   <button 
                     onClick={(e) => {
-                     e.preventDefault();
+                      e.preventDefault();
                       handleAddToCart(product);
-                   }}
-                  className="bg-green-800 text-white px-4 py-2 rounded-full hover:bg-green-600 transition duration-200"
-                   >
+                    }}
+                    className="bg-green-800 text-white px-4 py-2 rounded-full hover:bg-green-600 transition duration-200"
+                  >
                     Buy Now
                   </button>
-
                 </div>
               ))}
             </div>

@@ -15,32 +15,34 @@ import KidSupplement3 from '../assets/KidSupplement3.jpg';
 
 
 type Product = {
-  id: number;
+  _id: string;
   name: string;
-  price: string;
+  price: number;
   image: StaticImageData;
-  quantity: number; 
+  quantity: number;
+  tablets: number;
 };
 
-const products = [
-  { id: 1, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
-  { id: 2, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets: 30 },
-  { id: 3, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
-  { id: 4, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets: 30 },
-  { id: 5, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
+
+const products: Product[] = [
+  { _id: '1a', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
+  { _id: '2b', image: dailyPinkImage, name: 'Daily Pink', price: 1500 , quantity: 1, tablets: 30 },
+  { _id: '3c', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
+  { _id: '4d', image: dailyPinkImage, name: 'Daily Pink', price: 1500 , quantity: 1, tablets: 30 },
+  { _id: '5e', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
 ];
 
-const moreProducts = [
-  { id: 6, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets: 30 },
-  { id: 7, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
-  { id: 8, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets: 30 },
-  { id: 9, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
-  { id: 10, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets: 30 },
-  { id: 11, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
-  { id: 12, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets: 30 },
-  { id: 13, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
-  { id: 14, image: dailyPinkImage, name: 'Daily Pink', price: '1500 PKR', quantity: 1, tablets: 30 },
-  { id: 15, image: familyImage, name: 'Xtreme', price: '1500 PKR', quantity: 1, tablets: 10 },
+const moreProducts: Product[] = [
+  { _id: '6f', image: dailyPinkImage, name: 'Daily Pink', price: 1500 , quantity: 1, tablets: 30 },
+  { _id: '7g', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
+  { _id: '8h', image: dailyPinkImage, name: 'Daily Pink', price: 1500 , quantity: 1, tablets: 30 },
+  { _id: '9i', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
+  { _id: '10j', image: dailyPinkImage, name: 'Daily Pink', price: 1500 , quantity: 1, tablets: 30 },
+  { _id: '11k', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
+  { _id: '12l', image: dailyPinkImage, name: 'Daily Pink', price: 1500 , quantity: 1, tablets: 30 },
+  { _id: '13m', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
+  { _id: '14n', image: dailyPinkImage, name: 'Daily Pink', price: 1500 , quantity: 1, tablets: 30 },
+  { _id: '15o', image: familyImage, name: 'Xtreme', price: 1500 , quantity: 1, tablets: 10 },
 ];
 
 const KidCategory = () => {
@@ -61,17 +63,49 @@ const KidCategory = () => {
 
 
 
-      const handleAddToCart = (product: Product) => {
-  const existingProductIndex = cart.findIndex(item => item.id === product.id);
-  
-  if (existingProductIndex !== -1) {
-    const updatedCart = [...cart];
-    updatedCart[existingProductIndex].quantity += 1;
-    setCart(updatedCart);
-  } else {
-    setCart((prevCart) => [...prevCart, { ...product, quantity: 1 }]);
-  }
-};
+      useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        console.log('Loaded cart from localStorage:', parsedCart);
+        setCart(parsedCart);
+      } catch (error) {
+        console.error('Error parsing cart from localStorage:', error);
+      }
+    } else {
+      console.log('No cart found in localStorage');
+    }
+  }, []);
+   
+
+
+    
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      console.log('Saved cart to localStorage:', cart);
+    }
+  }, [cart]); 
+
+  const handleAddToCart = (product: Product) => {
+    const existingProductIndex = cart.findIndex(item => item._id === product._id);
+    let updatedCart: Product[];
+
+    if (existingProductIndex !== -1) {
+      updatedCart = cart.map((item, index) =>
+        index === existingProductIndex ? { ...item, quantity: item.quantity + 1 } : item
+      );
+      console.log(`Updated quantity for product ${product.name}:`, updatedCart[existingProductIndex].quantity);
+    } else {
+      updatedCart = [...cart, { ...product, quantity: 1 }];
+      console.log(`Added new product to cart:`, product.name);
+    }
+
+    setCart(updatedCart); 
+    console.log('Current cart state after update:', updatedCart);
+  };
 useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -113,7 +147,7 @@ useEffect(() => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 px-4">
             {products.map((product) => (
-              <div key={product.id} className="bg-white p-6 rounded-3xl shadow-lg ">
+              <div key={product._id} className="bg-white p-6 rounded-3xl shadow-lg ">
                 <Image 
                   src={product.image} 
                   alt={product.name} 
@@ -158,7 +192,7 @@ useEffect(() => {
             <div className="absolute inset-0 bg-green-100 opacity-0 transition-opacity duration-500 group-hover:opacity-20 rounded-3xl"></div>
 
             {/* Image with Link */}
-            <Link href={`/products/${moreProducts[currentProductIndex].id}`} passHref>
+            <Link href={`/products/${moreProducts[currentProductIndex]._id}`} passHref>
               <div className="relative mb-6 cursor-pointer">
                 <Image
                   src={moreProducts[currentProductIndex].image}
@@ -197,14 +231,14 @@ useEffect(() => {
         <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
           {moreProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               className="relative group bg-gradient-to-br from-gray-100 to-white p-8 rounded-3xl shadow-2xl hover:shadow-[0_10px_40px_rgba(0,0,0,0.2)]"
             >
               {/* Hover effect */}
               <div className="absolute inset-0 bg-green-100 opacity-0 transition-opacity duration-500 group-hover:opacity-20 rounded-3xl"></div>
 
               {/* Image with Link */}
-              <Link href={`/products/${product.id}`} passHref>
+              <Link href={`/products/${product._id}`} passHref>
                 <div className="relative mb-6 cursor-pointer">
                   <Image
                     src={product.image}
@@ -236,7 +270,6 @@ useEffect(() => {
     <section className="py-16 bg-white">
   <div className="container mx-auto px-4">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-      {/* First Block: Kids' Health Supplements */}
       <div className="relative">
         <Image
           src={KidSupplement}
